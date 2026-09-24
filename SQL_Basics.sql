@@ -156,3 +156,197 @@ VALUES
 -- View records
 SELECT *
 FROM Person;
+----------------------------------------------
+-- =========================================================
+-- ALTER TABLE
+-- =========================================================
+
+-- Drop Phone column and add Email column
+ALTER TABLE Person
+DROP COLUMN Phone;
+
+ALTER TABLE Person
+ADD Email VARCHAR(20);
+
+SELECT *
+FROM Person;
+
+
+-- =========================================================
+-- DROP TABLE
+-- =========================================================
+
+-- Drop the Person table
+DROP TABLE Person;
+
+
+-- =========================================================
+-- DML - INSERT, UPDATE, DELETE
+-- =========================================================
+
+-- View existing customers
+SELECT *
+FROM Customers;
+
+
+-- Manual INSERT with multiple rows
+INSERT INTO Customers
+VALUES
+    (6, 'Sanjeev', 'India', 950),
+    (7, 'Girivasan', 'Russiya', 1000);
+
+
+-- Insert a customer with NULL score
+INSERT INTO Customers
+VALUES
+    (8, 'Thanya', 'Erope', NULL);
+
+
+-- Insert values into specific columns
+INSERT INTO Customers
+    (id, first_name)
+VALUES
+    (10, 'Muthu');
+
+
+-- =========================================================
+-- INSERT INTO ... SELECT
+-- =========================================================
+
+-- Source table: Customers
+-- Target table: San
+-- Selected values must be compatible with target columns
+-- and appear in the correct column order.
+
+CREATE TABLE San
+(
+    id INT NOT NULL,
+    Name VARCHAR(50) NOT NULL,
+    Birth_date DATE,
+    Location VARCHAR(20)
+);
+
+
+-- Copy selected data from Customers into San
+INSERT INTO San
+SELECT
+    id,
+    first_name,
+    NULL,
+    'unknown'
+FROM Customers;
+
+
+SELECT *
+FROM San;
+
+
+-- Drop San table
+DROP TABLE San;
+
+
+-- =========================================================
+-- SELECT INTO
+-- =========================================================
+
+-- Create a new table and copy data from Customers
+SELECT *
+INTO San_1
+FROM Customers;
+
+
+SELECT *
+FROM San_1;
+
+
+-- =========================================================
+-- UPDATE
+-- =========================================================
+
+-- Update country for customer ID 10
+UPDATE San_1
+SET country = 'India'
+WHERE id = 10;
+
+
+-- Update score for customer named Thanya
+UPDATE San_1
+SET score = 999
+WHERE first_name = 'Thanya';
+
+
+-- Update multiple columns
+UPDATE San_1
+SET
+    country = 'US',
+    score = 1000
+WHERE id = 10;
+
+
+-- =========================================================
+-- UPDATE NULL VALUES
+-- =========================================================
+
+SELECT *
+FROM Customers;
+
+
+-- Replace NULL scores with 0
+UPDATE Customers
+SET score = 0
+WHERE score IS NULL;
+
+
+-- Find customers where country is NULL
+SELECT *
+FROM Customers
+WHERE country IS NULL;
+
+
+-- Update country for customer ID 10
+UPDATE Customers
+SET country = 'West Indies'
+WHERE id = 10;
+
+
+-- =========================================================
+-- DELETE
+-- =========================================================
+
+-- View rows that will be deleted
+SELECT *
+FROM Customers
+WHERE id > 5;
+
+
+-- Delete rows where ID is greater than 5
+DELETE FROM Customers
+WHERE id > 5;
+
+
+-- =========================================================
+-- TRUNCATE
+-- =========================================================
+
+SELECT *
+FROM San_1;
+
+
+-- Delete all rows while keeping the table structure
+TRUNCATE TABLE San_1;
+
+
+
+
+
+
+
+
+-- 
+
+
+
+
+
+
+
