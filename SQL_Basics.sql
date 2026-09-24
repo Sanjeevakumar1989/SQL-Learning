@@ -1,7 +1,6 @@
 
 --(Comments) Notes to explain code,ignored during excution
 --Customer Table analysis using(SELECT,DISTINCT,TOP,FROM,JOIN,WHERE,GROUP BY,HAVING,ORDER BY)
---Retrive data from customer only score condition data is >500 
 
 --------------------------
 --01_Database_and_Tables.sql
