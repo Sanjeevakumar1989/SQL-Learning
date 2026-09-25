@@ -353,6 +353,96 @@ SELECT *
 FROM customers
 CROSS JOIN orders;
 
+------------------------
+-- Database and Schema
+------------------------
+
+-- Display all databases available in SQL Server
+SELECT *
+FROM sys.databases;
+
+
+-- Switch to SalesDB database
+USE SalesDB;
+
+
+-- Display all tables and their schema names
+SELECT
+    t.name AS Table_Name,
+    s.name AS Schema_Name
+FROM sys.tables t
+INNER JOIN sys.schemas s
+    ON t.schema_id = s.schema_id;
+
+
+------------------------
+-- Sales Schema Tables
+------------------------
+
+-- Tables available in the Sales schema:
+-- Employees
+-- Customers
+-- Orders
+-- Products
+
+
+-- View Orders table
+SELECT *
+FROM Sales.Orders;
+
+
+-- View Customers table
+SELECT *
+FROM Sales.Customers;
+
+
+-- View Products table
+SELECT *
+FROM Sales.Products;
+
+
+-- View Employees table
+SELECT *
+FROM Sales.Employees;
+
+
+------------------------
+-- Multiple Table JOIN
+------------------------
+
+-- Retrieve order information along with:
+-- Customer details
+-- Product details
+-- Employee/Salesperson details
+
+SELECT
+    O.OrderID,
+    O.Sales,
+
+    C.FirstName AS Customer_FirstName,
+    C.LastName AS Customer_LastName,
+
+    P.Product AS Product_Name,
+    P.Price,
+
+    E.FirstName AS Employee_FirstName,
+    E.LastName AS Employee_LastName
+
+FROM Sales.Orders O
+
+-- Match Orders with Customers
+LEFT JOIN Sales.Customers C
+    ON O.CustomerID = C.CustomerID
+
+-- Match Orders with Products
+LEFT JOIN Sales.Products P
+    ON O.ProductID = P.ProductID
+
+-- Match Orders with Employees
+LEFT JOIN Sales.Employees E
+    ON O.SalesPersonID = E.EmployeeID;
+
+
 
 
 
