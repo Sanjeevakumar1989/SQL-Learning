@@ -801,8 +801,3 @@ LEFT JOIN Sales.Products P
 -- Match Orders with Employees
 LEFT JOIN Sales.Employees E
     ON O.SalesPersonID = E.EmployeeID;
-
-
-
-
->>>>>>> 281bbaa (SalesDB tables combined and done analysis)
