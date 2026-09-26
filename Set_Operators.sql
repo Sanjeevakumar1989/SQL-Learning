@@ -1,105 +1,283 @@
-select * from sys.databases
-use SalesDB
-select  t.Name as Table_Name,
-s.name as Schema_Name
-from sys.tables t inner join sys.schemas s ON t.schema_id = s.schema_id;
---Employees,Customers,Orders,Products
-
----------------
---Set Operators
-----------------
---Union
---Union all
---Except(minus)
---Intersect
-
---First query table handle the quries result column names 
---dont allow duplicates
-select Firstname as First_Name,LastName as Last_Name from sales.customers
-Union
-select FirstName,LastName from sales.Employees
-
---Union all  Allow duplicats,union all is faster comparing union
-select Firstname as First_Name,LastName as Last_Name from sales.customers
-Union all
-select FirstName,LastName from sales.Employees
-
-select * from sales.Employees;
-select * from sales.Customers;
-
---Except
---First Query distinct values only will get result so Query order table is important
-select 
-FirstName,
-LastName
-from sales.Employees
-except
-select 
-FirstName,
-LastName
-from sales.Customers
-
---Intersect
---it is working like Inner join  we will get both table common values only
-select 
-FirstName,
-LastName
-from sales.Employees
-Intersect
-select 
-FirstName,
-LastName
-from sales.Customers
+-- ============================================================
+-- SalesDB - Set Operators
+-- ============================================================
+-- Topics Covered:
+-- 1. UNION
+-- 2. UNION ALL
+-- 3. EXCEPT
+-- 4. INTERSECT
+-- 5. Practical use case with Orders and OrdersArchive
+-- ============================================================
 
 
---orders data stored in separate tables (orders and ordersarchive)
---combine all orders data into one report  without duplicates
+-- ============================================================
+-- 1. DATABASE AND TABLE INFORMATION
+-- ============================================================
 
-select * from sales.Orders;
-select * from sales.OrdersArchive;
-
-select * from sales.Orders
-union
-select * from sales.OrdersArchive
-
-select 
-        'orders'  as Sours_Table
-       ,[OrderID]
-      ,[ProductID]
-      ,[CustomerID]
-      ,[SalesPersonID]
-      ,[OrderDate]
-      ,[ShipDate]
-      ,[OrderStatus]
-      ,[ShipAddress]
-      ,[BillAddress]
-      ,[Quantity]
-      ,[Sales]
-      ,[CreationTime]
-from sales.Orders
-union
-select 
-        'Orersarchive' as SourceTable
-      , [OrderID]
-      ,[ProductID]
-      ,[CustomerID]
-      ,[SalesPersonID]
-      ,[OrderDate]
-      ,[ShipDate]
-      ,[OrderStatus]
-      ,[ShipAddress]
-      ,[BillAddress]
-      ,[Quantity]
-      ,[Sales]
-      ,[CreationTime]
-from sales.OrdersArchive
-order by OrderID
-
---Set operators use cases
---combine the results of  multible quries into single  result set
---combine information (union+Union all)
---Delta detection (except)
---Data completeness check(except)
---example daywise if we need to add data to database , no need to add previous day data again that time we can use except method
+-- View all databases available in SQL Server
+SELECT *
+FROM sys.databases;
 
 
+-- Switch to SalesDB database
+USE SalesDB;
+
+
+-- Display all tables along with their schema names
+SELECT
+    t.Name AS Table_Name,
+    s.Name AS Schema_Name
+FROM sys.tables t
+INNER JOIN sys.schemas s
+    ON t.schema_id = s.schema_id;
+
+
+-- SalesDB tables used in this practice:
+-- Employees
+-- Customers
+-- Orders
+-- Products
+
+
+-- ============================================================
+-- 2. SET OPERATORS
+-- ============================================================
+-- Set operators are used to combine the results of
+-- multiple SELECT queries into a single result set.
+--
+-- Main Set Operators:
+-- 1. UNION
+-- 2. UNION ALL
+-- 3. EXCEPT
+-- 4. INTERSECT
+--
+-- Important:
+-- The SELECT statements combined using set operators
+-- should have the same number of columns, and the
+-- corresponding columns should have compatible data types.
+
+
+-- ============================================================
+-- 3. UNION
+-- ============================================================
+-- UNION combines the result sets of two SELECT queries.
+--
+-- UNION removes duplicate rows from the final result.
+--
+-- The column names in the final result are taken from
+-- the FIRST SELECT statement.
+
+
+SELECT
+    FirstName AS First_Name,
+    LastName AS Last_Name
+FROM sales.Customers
+
+UNION
+
+SELECT
+    FirstName,
+    LastName
+FROM sales.Employees;
+
+
+-- ============================================================
+-- 4. UNION ALL
+-- ============================================================
+-- UNION ALL combines the result sets of two SELECT queries.
+--
+-- Unlike UNION, UNION ALL does NOT remove duplicate rows.
+--
+-- UNION ALL is generally faster than UNION because SQL Server
+-- does not need to perform duplicate elimination.
+
+
+SELECT
+    FirstName AS First_Name,
+    LastName AS Last_Name
+FROM sales.Customers
+
+UNION ALL
+
+SELECT
+    FirstName,
+    LastName
+FROM sales.Employees;
+
+
+-- View Employees data
+SELECT *
+FROM sales.Employees;
+
+
+-- View Customers data
+SELECT *
+FROM sales.Customers;
+
+
+-- ============================================================
+-- 5. EXCEPT
+-- ============================================================
+-- EXCEPT returns distinct rows from the FIRST SELECT query
+-- that are NOT present in the SECOND SELECT query.
+--
+-- Query order is important.
+--
+-- Example:
+-- Employees EXCEPT Customers
+-- = Employees who do not have the same FirstName + LastName
+--   combination in Customers.
+
+
+SELECT
+    FirstName,
+    LastName
+FROM sales.Employees
+
+EXCEPT
+
+SELECT
+    FirstName,
+    LastName
+FROM sales.Customers;
+
+
+-- ============================================================
+-- 6. INTERSECT
+-- ============================================================
+-- INTERSECT returns distinct rows that are common
+-- between both SELECT queries.
+--
+-- Example:
+-- Employees INTERSECT Customers
+-- = FirstName + LastName combinations that exist
+--   in both tables.
+
+
+SELECT
+    FirstName,
+    LastName
+FROM sales.Employees
+
+INTERSECT
+
+SELECT
+    FirstName,
+    LastName
+FROM sales.Customers;
+
+
+-- ============================================================
+-- 7. PRACTICAL USE CASE - ORDERS AND ORDERS ARCHIVE
+-- ============================================================
+-- Business scenario:
+-- Current orders are stored in the Orders table,
+-- while older orders are stored in the OrdersArchive table.
+--
+-- We want to combine both tables into a single result set.
+
+
+-- View current orders
+SELECT *
+FROM sales.Orders;
+
+
+-- View archived orders
+SELECT *
+FROM sales.OrdersArchive;
+
+
+-- Combine current and archived orders.
+-- UNION removes duplicate rows.
+
+
+SELECT *
+FROM sales.Orders
+
+UNION
+
+SELECT *
+FROM sales.OrdersArchive;
+
+
+-- ============================================================
+-- 8. UNION WITH SOURCE TABLE IDENTIFICATION
+-- ============================================================
+-- Add a column to identify which table the record came from.
+--
+-- 'Orders'       = Current Orders table
+-- 'OrdersArchive' = Archived Orders table
+--
+-- This is useful when combining data from multiple sources
+-- and tracking the original source of each record.
+
+
+SELECT
+    'Orders' AS Source_Table,
+    [OrderID],
+    [ProductID],
+    [CustomerID],
+    [SalesPersonID],
+    [OrderDate],
+    [ShipDate],
+    [OrderStatus],
+    [ShipAddress],
+    [BillAddress],
+    [Quantity],
+    [Sales],
+    [CreationTime]
+FROM sales.Orders
+
+UNION
+
+SELECT
+    'OrdersArchive' AS Source_Table,
+    [OrderID],
+    [ProductID],
+    [CustomerID],
+    [SalesPersonID],
+    [OrderDate],
+    [ShipDate],
+    [OrderStatus],
+    [ShipAddress],
+    [BillAddress],
+    [Quantity],
+    [Sales],
+    [CreationTime]
+FROM sales.OrdersArchive
+
+ORDER BY OrderID;
+
+
+-- ============================================================
+-- 9. SET OPERATORS - COMMON USE CASES
+-- ============================================================
+--
+-- Set operators can be useful for:
+--
+-- 1. Combining results
+--    UNION / UNION ALL can combine data from multiple queries.
+--
+-- 2. Combining information from multiple tables
+--    Example: Customers + Employees
+--
+-- 3. Delta detection
+--    EXCEPT can help identify rows present in one result
+--    but missing from another result.
+--
+-- 4. Data completeness checks
+--    EXCEPT can be used to compare two result sets.
+--
+-- 5. Day-wise data loading
+--    EXCEPT can help identify records that already exist
+--    or are missing when comparing source and target data.
+--
+-- Example:
+-- If we need to load today's data into a database, we can
+-- compare the incoming data with existing data and identify
+-- differences before inserting new records.
+
+
+-- ============================================================
+-- END OF SET OPERATORS PRACTICE
+-- ============================================================
